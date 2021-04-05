@@ -1,0 +1,122 @@
+﻿@model Movie
+
+
+@{  string imgSrc = "http://image.tmdb.org/t/p/" + "w500" + $"{Model.poster_path}";
+    string backdropSrc = "http://image.tmdb.org/t/p/" + "w1280" + $"{Model.backdrop_path}";
+    int allLanguages = Model.spoken_languages.Length;
+    int allGenre = Model.genres.Length;
+
+}
+    <style>
+        body{
+            background-image:url(@backdropSrc);
+        }
+       
+        .text {
+            background-color: rgba(255, 255, 255,.8);
+            
+            padding:25px;
+            border-radius: 25px;
+        }
+        .container{
+            display: flex;
+        }
+        .sideBySide {
+            flex: 1;
+            border-radius: 25px;
+        }
+        .sideBySide:first-child{
+            margin-right: 20px;
+        }
+        a{
+            justify-content: center;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: whitesmoke;
+            color: black;
+        }
+
+            button:hover {
+                color: rgb(109,178,164);
+                background-color: rgba(242,107,58, .2);
+            }
+    </style>
+
+<h2 class="text">@Model.original_title</h2>
+<div class="container">
+    <img src="@imgSrc" alt="Alternate Text" class="sideBySide" />
+    <div class="text sideBySide">
+        <h4>Description</h4>
+        <p>@Model.overview</p>
+        <h6>Genre(s):</h6>
+        <p>
+            @{
+                int biterator = 0;
+            }
+            @foreach (Genre genre in Model.genres)
+            {
+                @genre.name
+                if (++biterator != allGenre)
+                {
+                    @:,
+                }
+            }
+        </p>
+        <h6>Released:</h6>
+        <p>@Model.release_date</p>
+        <h6>Produced by:</h6>
+        <p>
+            @foreach (Production_Companies co in Model.production_companies)
+            {
+                @co.name@:,
+            }
+        </p>
+
+
+        <h6>Run time</h6>
+        <p>@Model.runtime minutes</p>
+
+        <h6>Available Language(s):</h6>
+        <p>
+            @{
+                int iterator = 0;
+            }
+            @foreach (Spoken_Languages language in Model.spoken_languages)
+            {
+                @language.english_name
+                if (++iterator != allLanguages)
+                {
+                    @:,
+                }
+            }
+        </p>
+
+        <p style="color:red">@TempData["error"]</p>
+        <a asp-action="AddToFavorites" asp-controller="Home" asp-route-id="@Model.id">
+            <button>
+                Add Movie To My Favorites
+            </button>
+        </a>
+        @if (!string.IsNullOrEmpty(Model.homepage))
+        {
+            <a href="@Model.homepage">
+                <button>
+                    Movie Home Page
+                </button>
+            </a>
+        }
+        @if (!string.IsNullOrEmpty(Model.imdb_id))
+        {
+            string imdbURL = "https://www.imdb.com/title/" + Model.imdb_id;
+            <a href=@imdbURL>
+                <button>
+                    IMDb Page
+                </button>
+            </a>
+        }
+    </div>
+</div>
